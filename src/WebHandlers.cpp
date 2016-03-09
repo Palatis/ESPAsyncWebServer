@@ -23,7 +23,7 @@
 
 bool AsyncStaticWebHandler::canHandle(AsyncWebServerRequest *request)
 {
-  if (request->method() != HTTP_GET) {
+  if (!(request->method() & HTTP_GET)) {
     return false;
   }
   if ((_isFile && request->url() != _uri) ) {
@@ -90,6 +90,4 @@ void AsyncStaticWebHandler::handleRequest(AsyncWebServerRequest *request)
     request->send(404);
   }
   path = String();
-
-
 }

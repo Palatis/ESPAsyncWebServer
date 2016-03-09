@@ -21,6 +21,7 @@
 #ifndef ASYNCWEBSERVERHANDLERIMPL_H_
 #define ASYNCWEBSERVERHANDLERIMPL_H_
 
+#define DEBUGF(...)
 
 #include "stddef.h"
 
@@ -58,14 +59,14 @@ class AsyncCallbackWebHandler: public AsyncWebHandler {
   private:
   protected:
     String _uri;
-    WebRequestMethod _method;
+    uint8_t _method;
     ArRequestHandlerFunction _onRequest;
     ArUploadHandlerFunction _onUpload;
     ArBodyHandlerFunction _onBody;
   public:
     AsyncCallbackWebHandler() : _uri(), _method(HTTP_ANY), _onRequest(NULL), _onUpload(NULL), _onBody(NULL){}
     void setUri(String uri){ _uri = uri; }
-    void setMethod(WebRequestMethod method){ _method = method; }
+    void setMethod(uint8_t method){ _method = method; }
     void onRequest(ArRequestHandlerFunction fn){ _onRequest = fn; }
     void onUpload(ArUploadHandlerFunction fn){ _onUpload = fn; }
     void onBody(ArBodyHandlerFunction fn){ _onBody = fn; }
@@ -74,7 +75,7 @@ class AsyncCallbackWebHandler: public AsyncWebHandler {
       if(!_onRequest)
         return false;
 
-      if(_method != HTTP_ANY && request->method() != _method)
+      if(!(_method & request->method()))
         return false;
 
       if(_uri.length() && (_uri != request->url() && !request->url().startsWith(_uri+"/")))

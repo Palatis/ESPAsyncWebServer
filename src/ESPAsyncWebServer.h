@@ -31,7 +31,6 @@
 
 #define DEBUGF(...) //Serial.printf(__VA_ARGS__)
 
-
 class AsyncWebServer;
 class AsyncWebServerRequest;
 class AsyncWebServerResponse;
@@ -41,7 +40,14 @@ class AsyncWebHandler;
 class AsyncResponseStream;
 
 typedef enum {
-  HTTP_ANY, HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PUT, HTTP_PATCH, HTTP_HEAD, HTTP_OPTIONS
+  HTTP_GET     = 0b00000001,
+  HTTP_POST    = 0b00000010,
+  HTTP_DELETE  = 0b00000100,
+  HTTP_PUT     = 0b00001000,
+  HTTP_PATCH   = 0b00010000,
+  HTTP_HEAD    = 0b00100000,
+  HTTP_OPTIONS = 0b01000000,
+  HTTP_ANY     = 0b01111111,
 } WebRequestMethod;
 
 /*
@@ -110,7 +116,7 @@ class AsyncWebServerRequest {
     uint8_t _parseState;
 
     uint8_t _version;
-    WebRequestMethod _method;
+    uint8_t _method;
     String _url;
     String _host;
     String _contentType;
@@ -167,7 +173,7 @@ class AsyncWebServerRequest {
 
     AsyncClient* client(){ return _client; }
     uint8_t version(){ return _version; }
-    WebRequestMethod method(){ return _method; }
+    uint8_t method(){ return _method; }
     String url(){ return _url; }
     String host(){ return _host; }
     String contentType(){ return _contentType; }
@@ -292,9 +298,9 @@ class AsyncWebServer {
     void addHandler(AsyncWebHandler* handler);
 
     void on(const char* uri, ArRequestHandlerFunction onRequest);
-    void on(const char* uri, WebRequestMethod method, ArRequestHandlerFunction onRequest);
-    void on(const char* uri, WebRequestMethod method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload);
-    void on(const char* uri, WebRequestMethod method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody);
+    void on(const char* uri, uint8_t method, ArRequestHandlerFunction onRequest);
+    void on(const char* uri, uint8_t method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload);
+    void on(const char* uri, uint8_t method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody);
 
     void serveStatic(const char* uri, fs::FS& fs, const char* path, const char* cache_header = NULL);
 
